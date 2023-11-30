@@ -140,7 +140,6 @@
             var layer1 = new FeatureLayer({ url: layer1Url });
             document.getElementById('map1-source').innerText = "Layer Source: " + layer1Url;
             var map1 = new Map({
-                basemap: "streets",
                 layers: [layer1]
             });
             var view1 = new MapView({
@@ -167,7 +166,6 @@
             document.getElementById('map2-source').innerText = "Layer Source: " + layer2Url;
 
             var map2 = new Map({
-                basemap: "streets",
                 layers: [layer2]
             });
             var view2 = new MapView({
