@@ -1,28 +1,40 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <link rel="stylesheet" href="https://js.arcgis.com/4.28/esri/css/main.css">
     <script src="https://js.arcgis.com/4.28/"></script>
 
     <style>
-        html, body, #map1, #map2 {
+        html,
+        body,
+        #map1,
+        #map2 {
             padding: 0;
             margin: 0;
             height: 100%;
         }
-        #map1, #map2 {
+
+        #map1,
+        #map2 {
             width: 50%;
             position: absolute;
             top: 0;
             bottom: 0;
         }
+
         #map1 {
             left: 0;
         }
+
         #map2 {
             right: 0;
         }
-        .load-time, .layer-source, .faster-load, .hosting-label {
+
+        .load-time,
+        .layer-source,
+        .faster-load,
+        .hosting-label {
             position: absolute;
             color: white;
             background-color: rgba(0, 0, 0, 0.7);
@@ -31,17 +43,37 @@
             font-size: 12px;
             z-index: 10;
         }
+
         .load-time {
             bottom: 10px;
             left: 10px;
             width: 180px;
         }
+
         .layer-source {
             top: 10px;
             left: 10px;
             width: 800px;
         }
+
+        .loading-wheel {
+            border: 5px solid #f3f3f3; /* Light grey background */
+            border-top: 5px solid #3498db; /* Blue color */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .faster-load {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -52,19 +84,23 @@
             border-radius: 8px;
             z-index: 15;
         }
+
         .hosting-label {
             top: 10px;
             padding: 5px;
             font-size: 14px;
         }
+
         #map1 .hosting-label {
             right: 10px;
         }
+
         #map2 .hosting-label {
             right: 10px;
         }
     </style>
 </head>
+
 <body>
     <div id="map1">
         <div id="map1-load-time" class="load-time"></div>
@@ -76,7 +112,10 @@
         <div id="map2-source" class="layer-source"></div>
         <div class="hosting-label">US Hosted</div>
     </div>
-    <div id="faster-load" class="faster-load"></div>
+    <div id="faster-load" class="faster-load">
+        <div id="loading-wheel" class="loading-wheel"></div>
+    </div>
+
 
     <script>
         require([
@@ -84,7 +123,7 @@
             "esri/views/MapView",
             "esri/layers/FeatureLayer",
             "esri/geometry/Extent"
-        ], function(Map, MapView, FeatureLayer, Extent) {
+        ], function (Map, MapView, FeatureLayer, Extent) {
 
             var startTime1, endTime1, loadTime1;
             var startTime2, endTime2, loadTime2;
@@ -97,9 +136,9 @@
                 spatialReference: { wkid: 4326 }
             });
 
-			var layer1Url = "https://services-ap1.arcgis.com/KXgw7trbcyv4XDXE/ArcGIS/rest/services/APAC_USAMajorCities/FeatureServer/0/";
-        var layer1 = new FeatureLayer({ url: layer1Url });
-		document.getElementById('map1-source').innerText = "Layer Source: " + layer1Url;
+            var layer1Url = "https://services-ap1.arcgis.com/KXgw7trbcyv4XDXE/ArcGIS/rest/services/APAC_USAMajorCities/FeatureServer/0/";
+            var layer1 = new FeatureLayer({ url: layer1Url });
+            document.getElementById('map1-source').innerText = "Layer Source: " + layer1Url;
             var map1 = new Map({
                 basemap: "streets",
                 layers: [layer1]
@@ -110,9 +149,9 @@
                 extent: usaExtent
             });
 
-            view1.when(function() {
+            view1.when(function () {
                 startTime1 = new Date().getTime();
-                view1.watch("updating", function(value) {
+                view1.watch("updating", function (value) {
                     if (!value) {
                         endTime1 = new Date().getTime();
                         loadTime1 = endTime1 - startTime1;
@@ -122,10 +161,10 @@
                 });
             });
 
-			var layer2Url = "https://services.arcgis.com/j3JVMGycAs95su2E/arcgis/rest/services/USAMajorCitiesFC_ExportFeaturesz/FeatureServer";
-        var layer2 = new FeatureLayer({ url: layer2Url });
-        // Set the layer source URL for map2
-        document.getElementById('map2-source').innerText = "Layer Source: " + layer2Url;
+            var layer2Url = "https://services.arcgis.com/j3JVMGycAs95su2E/arcgis/rest/services/USAMajorCitiesFC_ExportFeaturesz/FeatureServer";
+            var layer2 = new FeatureLayer({ url: layer2Url });
+            // Set the layer source URL for map2
+            document.getElementById('map2-source').innerText = "Layer Source: " + layer2Url;
 
             var map2 = new Map({
                 basemap: "streets",
@@ -137,9 +176,9 @@
                 extent: usaExtent
             });
 
-            view2.when(function() {
+            view2.when(function () {
                 startTime2 = new Date().getTime();
-                view2.watch("updating", function(value) {
+                view2.watch("updating", function (value) {
                     if (!value) {
                         endTime2 = new Date().getTime();
                         loadTime2 = endTime2 - startTime2;
@@ -154,9 +193,16 @@
                     var faster = loadTime1 < loadTime2 ? 'APAC' : 'US';
                     var percentFaster = 100 - (Math.min(loadTime1, loadTime2) / Math.max(loadTime1, loadTime2) * 100);
                     document.getElementById('faster-load').innerText = faster + " Hosted is faster by " + percentFaster.toFixed(2) + "%";
+                    // Hide the loading wheel
+                    document.getElementById('loading-wheel').style.display = 'none';
                 }
             }
+
+            // Initially, make sure the loading wheel is visible
+            document.getElementById('loading-wheel').style.display = 'block';
+
         });
     </script>
 </body>
+
 </html>
